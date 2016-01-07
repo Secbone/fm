@@ -76,14 +76,43 @@
 	    _createClass(App, [{
 	        key: "componentWillMount",
 	        value: function componentWillMount() {
-	            $.ajax({
+	            /*$.ajax({
 	                type: "GET",
 	                url: "http://on1x.cn/songtaste/list",
 	                dataType: "json",
-	                success: function success(data) {
-	                    console.log(data);
+	                success: (data) => {
+	                    console.log(data)
 	                }
-	            });
+	            })*/
+	            var data = "102065236|寂寞咖啡 |38061|唐古 |952594|寂寞咖啡 |2083772|241|4|1|0|9674662|3870080|320000|0|31691168|31988045|5728388|5994760|0|001SmOaV3Taefh|004JBnrz31Dj1E|003pchjc29aoe5|31|0";
+	            console.log(this.formatMusic(data));
+	        }
+	    }, {
+	        key: "formatMusic",
+	        value: function formatMusic(songdata) {
+	            songdata = unescape(unescape(songdata)).replace(/\+/ig, " ");
+	            var _arrSongAttr = ["mid", "msong", "msingerid", "msinger", "malbumid", "malbum", "msize", "minterval", "mstream", "mdownload", "msingertype", "size320", "size128", "mrate", "gososo", "sizeape", "sizeflac", "sizeogg"];
+
+	            var length = _arrSongAttr.length;
+	            var arrMusic = songdata.split("|");
+	            var _obj = {};
+	            var i = 0;
+	            var _length = Math.min(length, arrMusic.length);
+
+	            for (i = 0; i < _length; i++) {
+	                _obj[_arrSongAttr[i]] = arrMusic[i];
+	            }for (i = _length; i < length; i++) {
+	                _obj[_arrSongAttr[i]] = "";
+	            }var _data = _obj;
+	            _data.mruleid = 1E8;
+	            if (typeof _data.rule_id != "undefined") _data.mruleid = data.rule_id;
+	            _data.desc = "";
+
+	            var stream = parseInt(_data.mstream, 10) + 10;
+	            var sid = parseInt(_data.mid, 10) + 3E7;
+	            _data.songurl = "http://stream" + stream + ".qqmusic.qq.com/" + sid + ".mp3";
+
+	            return _data;
 	        }
 	    }, {
 	        key: "render",
@@ -133,18 +162,33 @@
 	    function WaveForm() {
 	        _classCallCheck(this, WaveForm);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(WaveForm).apply(this, arguments));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(WaveForm).call(this));
+
+	        _this.state = {
+	            context: null
+	        };
+	        return _this;
 	    }
 
 	    _createClass(WaveForm, [{
+	        key: "componentWillMount",
+	        value: function componentWillMount() {
+	            this.state.context = new AudioContext();
+	        }
+	    }, {
+	        key: "componentDidMount",
+	        value: function componentDidMount() {
+	            var el = document.getElementById("audio");
+	        }
+	    }, {
 	        key: "render",
 	        value: function render() {
-	            var url = "http://stream18.qqmusic.qq.com/30685978.mp3";
+	            var url = "http://stream8.qqmusic.qq.com/16787761.wma";
 	            //let url = "http://m8.songtaste.com/201601042113/b3f90882f40cf165a9da9068649ee0b7/g/20130827/8/8c/8c7dde6be84c8a5312e57e2a67f640b9.mp3";
 	            return _react2.default.createElement(
 	                "div",
 	                null,
-	                _react2.default.createElement("audio", { controls: true, src: url }),
+	                _react2.default.createElement("audio", { id: "audio", controls: true, autoPlay: true, src: url }),
 	                _react2.default.createElement("canvas", null)
 	            );
 	        }
