@@ -52,6 +52,10 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _waveform = __webpack_require__(2);
+
+	var _waveform2 = _interopRequireDefault(_waveform);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -70,12 +74,24 @@
 	    }
 
 	    _createClass(App, [{
+	        key: "componentWillMount",
+	        value: function componentWillMount() {
+	            $.ajax({
+	                type: "GET",
+	                url: "http://on1x.cn/songtaste/list",
+	                dataType: "json",
+	                success: function success(data) {
+	                    console.log(data);
+	                }
+	            });
+	        }
+	    }, {
 	        key: "render",
 	        value: function render() {
 	            return _react2.default.createElement(
 	                "div",
 	                null,
-	                "test"
+	                _react2.default.createElement(_waveform2.default, null)
 	            );
 	        }
 	    }]);
@@ -90,6 +106,54 @@
 /***/ function(module, exports) {
 
 	module.exports = React;
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var WaveForm = (function (_Component) {
+	    _inherits(WaveForm, _Component);
+
+	    function WaveForm() {
+	        _classCallCheck(this, WaveForm);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(WaveForm).apply(this, arguments));
+	    }
+
+	    _createClass(WaveForm, [{
+	        key: "render",
+	        value: function render() {
+	            var url = "http://stream18.qqmusic.qq.com/30685978.mp3";
+	            //let url = "http://m8.songtaste.com/201601042113/b3f90882f40cf165a9da9068649ee0b7/g/20130827/8/8c/8c7dde6be84c8a5312e57e2a67f640b9.mp3";
+	            return _react2.default.createElement(
+	                "div",
+	                null,
+	                _react2.default.createElement("audio", { controls: true, src: url }),
+	                _react2.default.createElement("canvas", null)
+	            );
+	        }
+	    }]);
+
+	    return WaveForm;
+	})(_react.Component);
+
+	module.exports = WaveForm;
 
 /***/ }
 /******/ ]);
