@@ -165,7 +165,9 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(WaveForm).call(this));
 
 	        _this.state = {
-	            context: null
+	            context: null,
+	            analyser: null,
+	            frequencyData: null
 	        };
 	        return _this;
 	    }
@@ -174,22 +176,45 @@
 	        key: "componentWillMount",
 	        value: function componentWillMount() {
 	            this.state.context = new AudioContext();
+	            this.state.analyser = this.state.context.createAnalyser();
+	            this.state.analyser.fftSize = 32;
+	            this.state.frequencyData = new Uint8Array(this.state.analyser.frequencyBinCount);
 	        }
 	    }, {
 	        key: "componentDidMount",
 	        value: function componentDidMount() {
+	            var _this2 = this;
+
 	            var el = document.getElementById("audio");
+	            el.crossOrigin = "y.qq.com";
+	            $("#audio").on("canplay", function () {
+	                var source = _this2.state.context.createMediaElementSource(el);
+	                source.connect(_this2.state.analyser);
+	                _this2.state.analyser.connect(_this2.state.context.destination);
+	            });
+	        }
+	    }, {
+	        key: "startAnimation",
+	        value: function startAnimation() {
+	            var _self = this;
+	            function keyFrame() {
+	                requestAnimationFrame(keyFrame);
+	                _self.state.analyser.getByteFrequencyData(_self.state.frequencyData);
+	                console.log(_self.state.frequencyData);
+	            }
+	            keyFrame();
 	        }
 	    }, {
 	        key: "render",
 	        value: function render() {
-	            var url = "http://stream8.qqmusic.qq.com/16787761.wma";
+	            this.startAnimation();
+	            var url = "song/encounter.mp3";
 	            //let url = "http://m8.songtaste.com/201601042113/b3f90882f40cf165a9da9068649ee0b7/g/20130827/8/8c/8c7dde6be84c8a5312e57e2a67f640b9.mp3";
 	            return _react2.default.createElement(
 	                "div",
 	                null,
-	                _react2.default.createElement("audio", { id: "audio", controls: true, autoPlay: true, src: url }),
-	                _react2.default.createElement("canvas", null)
+	                _react2.default.createElement("audio", { id: "audio", controls: true, src: url }),
+	                _react2.default.createElement("canvas", { id: "background" })
 	            );
 	        }
 	    }]);
