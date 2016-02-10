@@ -52,7 +52,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _waveform = __webpack_require__(2);
+	var _player = __webpack_require__(2);
+
+	var _player2 = _interopRequireDefault(_player);
+
+	var _waveform = __webpack_require__(9);
 
 	var _waveform2 = _interopRequireDefault(_waveform);
 
@@ -120,7 +124,9 @@
 	            return _react2.default.createElement(
 	                "div",
 	                null,
-	                _react2.default.createElement(_waveform2.default, null)
+	                "//",
+	                _react2.default.createElement(_waveform2.default, null),
+	                _react2.default.createElement(_player2.default, null)
 	            );
 	        }
 	    }]);
@@ -147,6 +153,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.Player = undefined;
 
 	var _react = __webpack_require__(1);
 
@@ -164,89 +171,76 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var WaveForm = (function (_Component) {
-	    _inherits(WaveForm, _Component);
+	var Player = exports.Player = (function (_Component) {
+	    _inherits(Player, _Component);
 
-	    function WaveForm() {
-	        _classCallCheck(this, WaveForm);
+	    function Player() {
+	        _classCallCheck(this, Player);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(WaveForm).call(this));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Player).call(this));
 
 	        _this.state = {
 	            context: null,
 	            analyser: null,
-	            frequencyData: null,
-	            rect_list: []
+	            frequencyData: null
 	        };
 	        return _this;
 	    }
 
-	    _createClass(WaveForm, [{
+	    _createClass(Player, [{
 	        key: "componentWillMount",
 	        value: function componentWillMount() {
 	            this.state.context = new AudioContext();
 	            this.state.analyser = this.state.context.createAnalyser();
 	            this.state.analyser.fftSize = 64;
 	            this.state.frequencyData = new Uint8Array(this.state.analyser.frequencyBinCount);
-	            for (var i = 0; i < 32; i++) {
-	                this.state.rect_list.push(_cabjs2.default.RectClass.extend({
-	                    x: 40 * i,
-	                    y: 0,
-	                    width: 38,
-	                    height: 100,
-	                    color: "rgba(130, 212, 96, 0.4)",
-	                    keyframe: function keyframe() {
-	                        this.y = _cabjs2.default._context.height - this.height;
-	                    }
-	                }));
-	            }
 	        }
 	    }, {
 	        key: "componentDidMount",
 	        value: function componentDidMount() {
 	            var _this2 = this;
 
-	            var el = document.getElementById("audio");
-	            el.crossOrigin = "y.qq.com";
-	            $("#audio").on("canplay", function () {
-	                var source = _this2.state.context.createMediaElementSource(el);
+	            this.refs.audio.addEventListener("canplay", function () {
+	                var source = _this2.state.context.createMediaElementSource(_this2.refs.audio);
 	                source.connect(_this2.state.analyser);
 	                _this2.state.analyser.connect(_this2.state.context.destination);
 	            });
-	            $("#background").attr("width", $(window).width() + "px");
-	            $("#background").attr("height", $(window).height() + "px");
+
+	            var e = new CustomEvent("player:size", {
+	                detail: this.state.analyser.fftSize / 2
+	            });
+	            window.dispatchEvent(e);
+
 	            var _self = this;
 	            _cabjs2.default.preframe(function () {
-	                _self.keyFrame();
+	                _self.triggerData();
 	            });
-	            _cabjs2.default.start("background");
 	        }
 	    }, {
-	        key: "keyFrame",
-	        value: function keyFrame() {
+	        key: "triggerData",
+	        value: function triggerData() {
 	            this.state.analyser.getByteFrequencyData(this.state.frequencyData);
-	            for (var i = 0; i < this.state.rect_list.length; i++) {
-	                this.state.rect_list[i].height = this.state.frequencyData[i] * 1.5 + 20;
-	            }
+	            var e = new CustomEvent("player:data", {
+	                detail: {
+	                    frequencyData: this.state.frequencyData
+	                }
+	            });
+
+	            window.dispatchEvent(e);
 	        }
 	    }, {
 	        key: "render",
 	        value: function render() {
 	            var url = "song/encounter.mp3";
-	            //let url = "http://m8.songtaste.com/201601042113/b3f90882f40cf165a9da9068649ee0b7/g/20130827/8/8c/8c7dde6be84c8a5312e57e2a67f640b9.mp3";
-	            return _react2.default.createElement(
-	                "div",
-	                null,
-	                _react2.default.createElement("audio", { id: "audio", autoPlay: true, controls: true, src: url }),
-	                _react2.default.createElement("canvas", { id: "background" })
-	            );
+
+	            return _react2.default.createElement("audio", { ref: "audio", autoPlay: true, controls: true, src: url });
 	        }
 	    }]);
 
-	    return WaveForm;
+	    return Player;
 	})(_react.Component);
 
-	exports.default = WaveForm;
+	exports.default = Player;
 
 /***/ },
 /* 3 */
@@ -277,13 +271,14 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var CabJS = {
+	    _pre_frame: new Array(),
 	    _components: _CabClassQueue2.default,
 	    setOptions: function setOptions(options) {
 	        this._context = _CabContext2.default.init(options);
 	        this.ctx = this._context.ctx;
 	    },
-	    start: function start(id) {
-	        this.setOptions(id);
+	    start: function start(selector) {
+	        this.setOptions(selector);
 	        this.runKeyframes();
 	    },
 	    clear: function clear() {
@@ -291,10 +286,17 @@
 	        this.ctx.fillRect(0, 0, this._context.width, this._context.height);
 	    },
 	    preframe: function preframe(callback) {
-	        this._pre_frame = callback;
+	        this._pre_frame.push(callback);
 	    },
 	    runKeyframes: function runKeyframes() {
-	        if (this._pre_frame) this._pre_frame.call(this);
+	        var _this = this;
+
+	        if (this._pre_frame.length) {
+	            this._pre_frame.forEach(function (item) {
+	                return item.call(_this);
+	            });
+	        }
+
 	        this.clear();
 	        this._components.forEach(function (item) {
 	            item.render();
@@ -320,8 +322,13 @@
 	    value: true
 	});
 	var CabContext = {
-	    init: function init(id) {
-	        this.el = document.getElementById(id);
+	    init: function init(selector) {
+	        if (typeof selector === "string") {
+	            this.el = document.querySelector(selector);
+	        } else if (selector.nodeType) {
+	            this.el = selector;
+	        }
+
 	        this.ctx = this.el.getContext("2d");
 	        this.width = this.el.width;
 	        this.height = this.el.height;
@@ -466,6 +473,108 @@
 	})(_CabClass3.default);
 
 	exports.default = CabRectClass;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.WaveForm = undefined;
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _cabjs = __webpack_require__(3);
+
+	var _cabjs2 = _interopRequireDefault(_cabjs);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var WaveForm = exports.WaveForm = (function (_Component) {
+	    _inherits(WaveForm, _Component);
+
+	    function WaveForm() {
+	        _classCallCheck(this, WaveForm);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(WaveForm).call(this));
+
+	        _this.state = {
+	            context: null,
+	            analyser: null,
+	            frequencyData: null,
+	            rect_list: []
+	        };
+	        return _this;
+	    }
+
+	    _createClass(WaveForm, [{
+	        key: "componentWillMount",
+	        value: function componentWillMount() {
+	            var _this2 = this;
+
+	            window.addEventListener("player:size", function (e) {
+	                for (var i = 0; i < e.detail; i++) {
+	                    _this2.state.rect_list.push(_cabjs2.default.RectClass.extend({
+	                        x: 40 * i,
+	                        y: 0,
+	                        width: 38,
+	                        height: 100,
+	                        color: "rgba(130, 212, 96, 0.4)",
+	                        keyframe: function keyframe() {
+	                            this.y = _cabjs2.default._context.height - this.height;
+	                        }
+	                    }));
+	                }
+	            });
+	        }
+	    }, {
+	        key: "componentDidMount",
+	        value: function componentDidMount() {
+	            $(this.refs.background).attr("width", $(window).width() + "px");
+	            $(this.refs.background).attr("height", $(window).height() + "px");
+
+	            var _self = this;
+	            window.addEventListener("player:data", function (e) {
+	                _self.drawWave(e);
+	            });
+	            _cabjs2.default.start(this.refs.background);
+	        }
+	    }, {
+	        key: "drawWave",
+	        value: function drawWave(e) {
+	            for (var i = 0; i < this.state.rect_list.length; i++) {
+	                this.state.rect_list[i].height = e.detail.frequencyData[i] * 1.5 + 20;
+	            }
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            //let url = "http://m8.songtaste.com/201601042113/b3f90882f40cf165a9da9068649ee0b7/g/20130827/8/8c/8c7dde6be84c8a5312e57e2a67f640b9.mp3";
+	            return _react2.default.createElement(
+	                "div",
+	                null,
+	                _react2.default.createElement("canvas", { id: "background", ref: "background" })
+	            );
+	        }
+	    }]);
+
+	    return WaveForm;
+	})(_react.Component);
+
+	exports.default = WaveForm;
 
 /***/ }
 /******/ ]);

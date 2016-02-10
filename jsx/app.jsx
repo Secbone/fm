@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import Player from "./components/player";
 import WaveForm from "./components/waveform";
 
 class App extends Component {
@@ -62,11 +63,12 @@ class App extends Component {
 
         return _data;
     }
-    
+
     render() {
         return (
             <div>
-                <WaveForm />
+                //<WaveForm />
+                <Player />
             </div>
         );
     }
