@@ -20,7 +20,7 @@ export class WaveForm extends Component {
                     y: 0,
                     width: 38,
                     height: 100,
-                    color: "rgba(130, 212, 96, 0.4)",
+                    color: "rgba(24, 226, 68, 0.1)",
                     keyframe: function() {
                         this.y = CabJS._context.height - this.height;
                     }

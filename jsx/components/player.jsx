@@ -22,7 +22,7 @@ export class Player extends Component {
             source.connect(this.state.analyser);
             this.state.analyser.connect(this.state.context.destination);
         });
-        
+
         let e = new CustomEvent("player:size", {
             detail: this.state.analyser.fftSize/2
         });
@@ -30,8 +30,19 @@ export class Player extends Component {
 
         let _self = this;
         CabJS.preframe(function() {
+            _self.triggerTime();
             _self.triggerData();
         });
+    }
+    triggerTime() {
+        let e = new CustomEvent("player:time", {
+            detail: {
+                duration: this.refs.audio.duration,
+                current: this.refs.audio.currentTime,
+            },
+        });
+
+        window.dispatchEvent(e);
     }
     triggerData() {
         this.state.analyser.getByteFrequencyData(this.state.frequencyData);

@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import Player from "./components/player";
 import WaveForm from "./components/waveform";
+import Progress from "./components/progress";
 
 class App extends Component {
     componentWillMount() {
@@ -67,7 +68,8 @@ class App extends Component {
     render() {
         return (
             <div>
-                //<WaveForm />
+                <Progress />
+                <WaveForm />
                 <Player />
             </div>
         );

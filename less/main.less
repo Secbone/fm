@@ -7,9 +7,28 @@ body{
     background-color: #ccc;
 }
 
+audio{
+    display: none;
+}
+
 #background{
     position: fixed;
     top: 0;
     left: 0;
     z-index: -1;
+}
+
+.progress-bar{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 5px;
+    width: 100%;
+
+    .progress-value{
+        position: relative;
+        height: 100%;
+        width: 0%;
+        background-color: #18E244;
+    }
 }

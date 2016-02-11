@@ -60,6 +60,10 @@
 
 	var _waveform2 = _interopRequireDefault(_waveform);
 
+	var _progress = __webpack_require__(10);
+
+	var _progress2 = _interopRequireDefault(_progress);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -124,7 +128,7 @@
 	            return _react2.default.createElement(
 	                "div",
 	                null,
-	                "//",
+	                _react2.default.createElement(_progress2.default, null),
 	                _react2.default.createElement(_waveform2.default, null),
 	                _react2.default.createElement(_player2.default, null)
 	            );
@@ -213,8 +217,21 @@
 
 	            var _self = this;
 	            _cabjs2.default.preframe(function () {
+	                _self.triggerTime();
 	                _self.triggerData();
 	            });
+	        }
+	    }, {
+	        key: "triggerTime",
+	        value: function triggerTime() {
+	            var e = new CustomEvent("player:time", {
+	                detail: {
+	                    duration: this.refs.audio.duration,
+	                    current: this.refs.audio.currentTime
+	                }
+	            });
+
+	            window.dispatchEvent(e);
 	        }
 	    }, {
 	        key: "triggerData",
@@ -532,7 +549,7 @@
 	                        y: 0,
 	                        width: 38,
 	                        height: 100,
-	                        color: "rgba(130, 212, 96, 0.4)",
+	                        color: "rgba(24, 226, 68, 0.1)",
 	                        keyframe: function keyframe() {
 	                            this.y = _cabjs2.default._context.height - this.height;
 	                        }
@@ -575,6 +592,76 @@
 	})(_react.Component);
 
 	exports.default = WaveForm;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Progress = undefined;
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Progress = exports.Progress = (function (_Component) {
+	    _inherits(Progress, _Component);
+
+	    function Progress() {
+	        _classCallCheck(this, Progress);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Progress).call(this));
+
+	        _this.state = {
+	            progress: 0
+	        };
+	        return _this;
+	    }
+
+	    _createClass(Progress, [{
+	        key: "componentWillMount",
+	        value: function componentWillMount() {
+	            var _this2 = this;
+
+	            window.addEventListener("player:time", function (e) {
+	                _this2.setState({
+	                    progress: e.detail.current / e.detail.duration
+	                });
+	            });
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            var progress = {
+	                width: this.state.progress * 100 + "%"
+	            };
+
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "progress-bar" },
+	                _react2.default.createElement("div", { className: "progress-value", style: progress })
+	            );
+	        }
+	    }]);
+
+	    return Progress;
+	})(_react.Component);
+
+	exports.default = Progress;
 
 /***/ }
 /******/ ]);
