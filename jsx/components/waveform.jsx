@@ -9,10 +9,12 @@ export class WaveForm extends Component {
             analyser: null,
             frequencyData: null,
             rect_list: [],
+            color: [24, 226, 68],
         };
     }
 
     componentWillMount() {
+        let _self = this;
         window.addEventListener("player:size", e => {
             for(let i=0; i<e.detail; i++) {
                 this.state.rect_list.push(CabJS.RectClass.extend({
@@ -20,12 +22,18 @@ export class WaveForm extends Component {
                     y: 0,
                     width: 38,
                     height: 100,
-                    color: "rgba(24, 226, 68, 0.1)",
                     keyframe: function() {
+                        this.color = `rgba(${_self.state.color[0]}, ${_self.state.color[1]}, ${_self.state.color[2]}, 0.1)`;
                         this.y = CabJS._context.height - this.height;
                     }
                 }));
             }
+        });
+
+        window.addEventListener("player:color", e => {
+            this.setState({
+                color: e.detail.color,
+            });
         });
     }
 
@@ -42,7 +50,7 @@ export class WaveForm extends Component {
 
     drawWave(e) {
         for(let i=0; i<this.state.rect_list.length; i++){
-            this.state.rect_list[i].height = e.detail.frequencyData[i]*1.5+20;
+            this.state.rect_list[i].height = e.detail.frequencyData[i]*1.5;
         }
     }
 

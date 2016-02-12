@@ -13,8 +13,21 @@ class App extends Component {
                 console.log(data)
             }
         })*/
-        let data = "102065236|寂寞咖啡 |38061|唐古 |952594|寂寞咖啡 |2083772|241|4|1|0|9674662|3870080|320000|0|31691168|31988045|5728388|5994760|0|001SmOaV3Taefh|004JBnrz31Dj1E|003pchjc29aoe5|31|0";
-        console.log(this.formatMusic(data));
+        //let data = "102065236|寂寞咖啡 |38061|唐古 |952594|寂寞咖啡 |2083772|241|4|1|0|9674662|3870080|320000|0|31691168|31988045|5728388|5994760|0|001SmOaV3Taefh|004JBnrz31Dj1E|003pchjc29aoe5|31|0";
+        //console.log(this.formatMusic(data));
+        document.body.addEventListener("dblclick", event => {
+            let e = new CustomEvent("player:color", {
+                detail: {
+                    color: [
+                        Math.round(Math.random()*255),
+                        Math.round(Math.random()*255),
+                        Math.round(Math.random()*255),
+                    ],
+                },
+            });
+
+            window.dispatchEvent(e);
+        });
     }
 
     formatMusic(songdata) {

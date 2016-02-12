@@ -92,8 +92,17 @@
 	                    console.log(data)
 	                }
 	            })*/
-	            var data = "102065236|寂寞咖啡 |38061|唐古 |952594|寂寞咖啡 |2083772|241|4|1|0|9674662|3870080|320000|0|31691168|31988045|5728388|5994760|0|001SmOaV3Taefh|004JBnrz31Dj1E|003pchjc29aoe5|31|0";
-	            console.log(this.formatMusic(data));
+	            //let data = "102065236|寂寞咖啡 |38061|唐古 |952594|寂寞咖啡 |2083772|241|4|1|0|9674662|3870080|320000|0|31691168|31988045|5728388|5994760|0|001SmOaV3Taefh|004JBnrz31Dj1E|003pchjc29aoe5|31|0";
+	            //console.log(this.formatMusic(data));
+	            document.body.addEventListener("dblclick", function (event) {
+	                var e = new CustomEvent("player:color", {
+	                    detail: {
+	                        color: [Math.round(Math.random() * 255), Math.round(Math.random() * 255), Math.round(Math.random() * 255)]
+	                    }
+	                });
+
+	                window.dispatchEvent(e);
+	            });
 	        }
 	    }, {
 	        key: "formatMusic",
@@ -532,7 +541,8 @@
 	            context: null,
 	            analyser: null,
 	            frequencyData: null,
-	            rect_list: []
+	            rect_list: [],
+	            color: [24, 226, 68]
 	        };
 	        return _this;
 	    }
@@ -542,6 +552,7 @@
 	        value: function componentWillMount() {
 	            var _this2 = this;
 
+	            var _self = this;
 	            window.addEventListener("player:size", function (e) {
 	                for (var i = 0; i < e.detail; i++) {
 	                    _this2.state.rect_list.push(_cabjs2.default.RectClass.extend({
@@ -549,12 +560,18 @@
 	                        y: 0,
 	                        width: 38,
 	                        height: 100,
-	                        color: "rgba(24, 226, 68, 0.1)",
 	                        keyframe: function keyframe() {
+	                            this.color = "rgba(" + _self.state.color[0] + ", " + _self.state.color[1] + ", " + _self.state.color[2] + ", 0.1)";
 	                            this.y = _cabjs2.default._context.height - this.height;
 	                        }
 	                    }));
 	                }
+	            });
+
+	            window.addEventListener("player:color", function (e) {
+	                _this2.setState({
+	                    color: e.detail.color
+	                });
 	            });
 	        }
 	    }, {
@@ -573,7 +590,7 @@
 	        key: "drawWave",
 	        value: function drawWave(e) {
 	            for (var i = 0; i < this.state.rect_list.length; i++) {
-	                this.state.rect_list[i].height = e.detail.frequencyData[i] * 1.5 + 20;
+	                this.state.rect_list[i].height = e.detail.frequencyData[i] * 1.5;
 	            }
 	        }
 	    }, {
@@ -627,7 +644,8 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Progress).call(this));
 
 	        _this.state = {
-	            progress: 0
+	            progress: 0,
+	            color: [24, 226, 68]
 	        };
 	        return _this;
 	    }
@@ -642,12 +660,19 @@
 	                    progress: e.detail.current / e.detail.duration
 	                });
 	            });
+
+	            window.addEventListener("player:color", function (e) {
+	                _this2.setState({
+	                    color: e.detail.color
+	                });
+	            });
 	        }
 	    }, {
 	        key: "render",
 	        value: function render() {
 	            var progress = {
-	                width: this.state.progress * 100 + "%"
+	                width: this.state.progress * 100 + "%",
+	                backgroundColor: "rgb(" + this.state.color[0] + ", " + this.state.color[1] + ", " + this.state.color[2] + ")"
 	            };
 
 	            return _react2.default.createElement(
