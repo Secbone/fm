@@ -20,6 +20,6 @@ gulp.task("less", () => {
 });
 
 gulp.task("watch", () => {
-    gulp.watch("jsx/**/*.jsx", ["jsx"]);
+    gulp.watch("jsx/**/*", ["jsx"]);
     gulp.watch("less/**/*.less", ["less"]);
 });
